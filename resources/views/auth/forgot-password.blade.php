@@ -7,9 +7,13 @@
                 @csrf
                 <h1>Восстановление пароля</h1>
                 <p class="hero-text">Укажите email — мы отправим ссылку для сброса пароля.</p>
-                <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
+                <div class="field @error('email') field-has-error @enderror">
+                    <label class="field-label" for="email">Email</label>
+                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email">
+                    @error('email')<span class="field-error-text">{{ $message }}</span>@enderror
+                </div>
                 <button class="button" type="submit">Отправить ссылку</button>
-                <p><a href="{{ route('login') }}">Вернуться ко входу</a></p>
+                <p><a class="text-link" href="{{ route('login') }}">Вернуться ко входу</a></p>
             </form>
         </div>
     </section>

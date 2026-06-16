@@ -14,6 +14,10 @@ class AdminNotifier
 
     public static function notify(mixed $mailable): void
     {
+        if (! self::exists()) {
+            return;
+        }
+
         Mail::to(self::email())->send($mailable);
     }
 

@@ -13,10 +13,12 @@ class CompareController extends Controller
 
     public function index(Request $request): View
     {
+        $ids = self::syncSessionIds($request);
+
         $cars = Car::query()
-            ->whereIn('id', $this->ids($request))
+            ->whereIn('id', $ids)
             ->get()
-            ->sortBy(fn (Car $car) => array_search($car->id, $this->ids($request), true));
+            ->sortBy(fn (Car $car) => array_search($car->id, $ids, true));
 
         return view('cars.compare', [
             'cars' => $cars,
@@ -25,7 +27,7 @@ class CompareController extends Controller
 
     public function store(Request $request, Car $car): RedirectResponse
     {
-        $ids = $this->ids($request);
+        $ids = self::syncSessionIds($request);
 
         if (in_array($car->id, $ids, true)) {
             return back()->with('error', 'Этот автомобиль уже добавлен в сравнение.');
@@ -44,7 +46,7 @@ class CompareController extends Controller
     public function destroy(Request $request, Car $car): RedirectResponse
     {
         $ids = array_values(array_filter(
-            $this->ids($request),
+            self::syncSessionIds($request),
             fn (int $id) => $id !== $car->id
         ));
 
@@ -63,15 +65,42 @@ class CompareController extends Controller
     /** @return list<int> */
     public static function idsFromSession(Request $request): array
     {
-        return array_values(array_unique(array_map(
-            'intval',
+        return self::sanitizeIds(
             (array) $request->session()->get('compare_cars', [])
-        )));
+        );
     }
 
     /** @return list<int> */
-    private function ids(Request $request): array
+    private static function syncSessionIds(Request $request): array
     {
-        return self::idsFromSession($request);
+        $ids = self::sanitizeIds(
+            (array) $request->session()->get('compare_cars', [])
+        );
+
+        $request->session()->put('compare_cars', $ids);
+
+        return $ids;
+    }
+
+    /** @param list<int|string> $rawIds
+     * @return list<int>
+     */
+    private static function sanitizeIds(array $rawIds): array
+    {
+        $ids = array_values(array_unique(array_filter(
+            array_map('intval', $rawIds),
+            fn (int $id) => $id > 0
+        )));
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $existing = Car::query()->whereIn('id', $ids)->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        return array_values(array_filter(
+            $ids,
+            fn (int $id) => in_array($id, $existing, true)
+        ));
     }
 }

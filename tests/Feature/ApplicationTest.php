@@ -26,7 +26,7 @@ class ApplicationTest extends TestCase
             'image' => 'https://example.com/car.jpg',
         ]);
 
-        $response = $this->actingAs($user)->post("/catalog/{$car->id}/apply", [
+        $response = $this->actingAs($user)->post("/catalog/{$car->slug}/apply", [
             'message' => 'Хочу купить',
         ]);
 
@@ -52,9 +52,9 @@ class ApplicationTest extends TestCase
             'image' => 'https://example.com/car.jpg',
         ]);
 
-        $this->actingAs($user)->post("/catalog/{$car->id}/apply");
+        $this->actingAs($user)->post("/catalog/{$car->slug}/apply");
 
-        $response = $this->actingAs($user)->post("/catalog/{$car->id}/apply");
+        $response = $this->actingAs($user)->post("/catalog/{$car->slug}/apply");
 
         $response->assertRedirect();
         $response->assertSessionHas('error');

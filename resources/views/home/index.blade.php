@@ -27,19 +27,19 @@
         <div class="container">
             <div class="section-head">
                 <h2>Популярные автомобили</h2>
-                <a href="{{ route('cars.index') }}">Смотреть весь каталог</a>
+                <a class="text-link" href="{{ route('cars.index') }}">Смотреть весь каталог</a>
             </div>
             <div class="card-grid">
                 @foreach($featuredCars as $car)
                     <article class="car-card">
-                        <img src="{{ $car->image }}" alt="{{ $car->display_name }}">
+                        <img src="{{ $car->image }}" alt="{{ $car->display_name }}" loading="lazy">
                         <div class="car-card-body">
                             <div class="car-card-top">
                                 <div>
                                     <h3>{{ $car->display_name }}</h3>
                                     <p>{{ $car->year }} • {{ $car->transmission }}</p>
                                 </div>
-                                <strong>{{ number_format($car->price, 0, '.', ' ') }} ₽</strong>
+                                <span class="price price-sm">{{ number_format($car->price, 0, '.', ' ') }} ₽</span>
                             </div>
                             <p>{{ \Illuminate\Support\Str::limit($car->description, 110) }}</p>
                             @include('cars.partials.actions', ['car' => $car])
@@ -55,17 +55,17 @@
         <div class="container">
             <div class="section-head">
                 <h2>Новости и акции</h2>
-                <a href="{{ route('news.index') }}">Все новости</a>
+                <a class="text-link" href="{{ route('news.index') }}">Все новости</a>
             </div>
             <div class="news-grid">
                 @foreach($latestNews as $news)
                     <article class="news-card">
-                        <img src="{{ $news->image }}" alt="{{ $news->title }}">
+                        <img src="{{ $news->image }}" alt="{{ $news->title }}" loading="lazy">
                         <div class="news-card-body">
                             <span>{{ $news->published_at->format('d.m.Y') }}</span>
                             <h3>{{ $news->title }}</h3>
                             <p>{{ $news->excerpt }}</p>
-                            <a href="{{ route('news.show', $news->slug) }}">Читать</a>
+                            <a class="text-link" href="{{ route('news.show', $news->slug) }}">Читать</a>
                         </div>
                     </article>
                 @endforeach

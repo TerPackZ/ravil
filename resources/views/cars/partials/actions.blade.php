@@ -4,12 +4,12 @@
             <form method="POST" action="{{ route('favorites.destroy', $car) }}">
                 @csrf
                 @method('DELETE')
-                <button class="button button-ghost button-sm" type="submit" title="Убрать из избранного">★ В избранном</button>
+                <button class="button button-ghost button-sm" type="submit" aria-label="Убрать {{ $car->display_name }} из избранного">★ В избранном</button>
             </form>
         @else
             <form method="POST" action="{{ route('favorites.store', $car) }}">
                 @csrf
-                <button class="button button-ghost button-sm" type="submit" title="Добавить в избранное">☆ В избранное</button>
+                <button class="button button-ghost button-sm" type="submit" aria-label="Добавить {{ $car->display_name }} в избранное">☆ В избранное</button>
             </form>
         @endif
     @endauth

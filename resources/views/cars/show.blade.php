@@ -23,52 +23,67 @@
                 @include('cars.partials.actions', ['car' => $car])
 
                 @auth
-                    @if($hasActiveApplication)
-                        <div class="alert success">У вас уже есть активная заявка на этот автомобиль. Статус можно посмотреть в <a href="{{ route('dashboard') }}">личном кабинете</a>.</div>
-                    @else
-                        <form class="stack-form" method="POST" action="{{ route('cars.apply', $car) }}">
-                            @csrf
-                            <textarea name="message" rows="4" placeholder="Комментарий к заявке"></textarea>
-                            <button class="button" type="submit">Оформить заявку</button>
-                        </form>
-                    @endif
+                    <div class="detail-forms">
+                        @if($hasActiveApplication)
+                            <div class="alert success">У вас уже есть активная заявка на этот автомобиль. Статус можно посмотреть в <a class="text-link" href="{{ route('dashboard') }}">личном кабинете</a>.</div>
+                        @else
+                            <form class="stack-form" method="POST" action="{{ route('cars.apply', $car) }}">
+                                @csrf
+                                <div class="field">
+                                    <label class="field-label" for="application-message">Комментарий к заявке</label>
+                                    <textarea id="application-message" name="message" rows="4" placeholder="Например: интересует trade-in или кредит">{{ old('message') }}</textarea>
+                                </div>
+                                <button class="button" type="submit">Оформить заявку</button>
+                            </form>
+                        @endif
 
-                    @if($hasActiveTestDrive ?? false)
-                        <div class="alert success">У вас уже есть активная запись на тест-драйв. Подробности — в <a href="{{ route('dashboard') }}">личном кабинете</a>.</div>
-                    @else
-                        <form class="stack-form" method="POST" action="{{ route('test-drives.store') }}">
-                            @csrf
-                            <input type="hidden" name="car_id" value="{{ $car->id }}">
-                            <input type="datetime-local" name="scheduled_for" required>
-                            <textarea name="comment" rows="3" placeholder="Пожелания к тест-драйву"></textarea>
-                            <button class="button button-ghost" type="submit">Записаться на тест-драйв</button>
-                        </form>
-                    @endif
+                        @if($hasActiveTestDrive ?? false)
+                            <div class="alert success">У вас уже есть активная запись на тест-драйв. Подробности — в <a class="text-link" href="{{ route('dashboard') }}">личном кабинете</a>.</div>
+                        @else
+                            <form class="stack-form" method="POST" action="{{ route('test-drives.store') }}">
+                                @csrf
+                                <input type="hidden" name="car_id" value="{{ $car->id }}">
+                                <div class="field">
+                                    <label class="field-label" for="scheduled_for">Дата и время тест-драйва</label>
+                                    <input id="scheduled_for" type="datetime-local" name="scheduled_for" value="{{ old('scheduled_for') }}" min="{{ now()->addHour()->format('Y-m-d\TH:i') }}" required>
+                                </div>
+                                <div class="field">
+                                    <label class="field-label" for="test-drive-comment">Пожелания</label>
+                                    <textarea id="test-drive-comment" name="comment" rows="3" placeholder="Удобное время, вопросы по комплектации">{{ old('comment') }}</textarea>
+                                </div>
+                                <button class="button button-ghost" type="submit">Записаться на тест-драйв</button>
+                            </form>
+                        @endif
+                    </div>
                 @else
-                    <p>Чтобы оформить заявку или тест-драйв, <a href="{{ route('login') }}">войдите в аккаунт</a>.</p>
+                    <div class="guest-cta">
+                        Чтобы оформить заявку или тест-драйв, <a href="{{ route('login') }}">войдите в аккаунт</a> или <a href="{{ route('register') }}">зарегистрируйтесь</a>.
+                    </div>
                 @endauth
             </div>
         </div>
     </section>
 
-    <section class="section section-muted">
-        <div class="container">
-            <div class="section-head">
-                <h2>Похожие предложения</h2>
+    @if($relatedCars->isNotEmpty())
+        <section class="section section-muted">
+            <div class="container">
+                <div class="section-head">
+                    <h2>Похожие предложения</h2>
+                </div>
+                <div class="card-grid">
+                    @foreach($relatedCars as $relatedCar)
+                        <article class="car-card">
+                            <img src="{{ $relatedCar->image }}" alt="{{ $relatedCar->display_name }}" loading="lazy">
+                            <div class="car-card-body">
+                                <h3>{{ $relatedCar->display_name }}</h3>
+                                <p class="price price-sm">{{ number_format($relatedCar->price, 0, '.', ' ') }} ₽</p>
+                                @include('cars.partials.actions', ['car' => $relatedCar])
+                                <a class="button button-block" href="{{ route('cars.show', $relatedCar->slug) }}">Подробнее</a>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
             </div>
-            <div class="card-grid">
-                @foreach($relatedCars as $relatedCar)
-                    <article class="car-card">
-                        <img src="{{ $relatedCar->image }}" alt="{{ $relatedCar->display_name }}">
-                        <div class="car-card-body">
-                            <h3>{{ $relatedCar->display_name }}</h3>
-                            <p>{{ number_format($relatedCar->price, 0, '.', ' ') }} ₽</p>
-                            @include('cars.partials.actions', ['car' => $relatedCar])
-                            <a class="button button-block" href="{{ route('cars.show', $relatedCar->slug) }}">Подробнее</a>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
-        </div>
-    </section>
+        </section>
+    @endif
 @endsection

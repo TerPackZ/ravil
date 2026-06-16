@@ -3,8 +3,17 @@
 @section('content')
     <section class="section">
         <div class="container">
-            <div class="section-head">
-                <h1>Сравнение автомобилей</h1>
+            <div class="page-header page-header-with-action">
+                <div>
+                    <h1>Сравнение автомобилей</h1>
+                    <p class="page-subtitle compare-slot-label">
+                        @if($cars->isNotEmpty())
+                            Выбрано {{ $cars->count() }} из 3 автомобилей
+                        @else
+                            Добавьте до 3 автомобилей из каталога
+                        @endif
+                    </p>
+                </div>
                 @if($cars->isNotEmpty())
                     <form method="POST" action="{{ route('cars.compare.clear') }}" data-confirm="Очистить список сравнения?">
                         @csrf
@@ -15,8 +24,8 @@
             </div>
 
             @if($cars->isEmpty())
-                <div class="panel">
-                    <p>Добавьте до 3 автомобилей из каталога, чтобы сравнить характеристики.</p>
+                <div class="empty-state">
+                    <p>Добавьте автомобили из каталога, чтобы сравнить цену, год, пробег и комплектацию.</p>
                     <a class="button" href="{{ route('cars.index') }}">Перейти в каталог</a>
                 </div>
             @else
@@ -24,69 +33,44 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Параметр</th>
+                                <th scope="col">Параметр</th>
                                 @foreach($cars as $car)
-                                    <th>
-                                        <a href="{{ route('cars.show', $car->slug) }}">{{ $car->display_name }}</a>
+                                    <th scope="col">
+                                        <a class="text-link" href="{{ route('cars.show', $car->slug) }}">{{ $car->display_name }}</a>
                                     </th>
                                 @endforeach
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Цена</td>
-                                @foreach($cars as $car)
-                                    <td>{{ number_format($car->price, 0, '.', ' ') }} ₽</td>
-                                @endforeach
-                            </tr>
-                            <tr>
-                                <td>Год</td>
-                                @foreach($cars as $car)
-                                    <td>{{ $car->year }}</td>
-                                @endforeach
-                            </tr>
-                            <tr>
-                                <td>Пробег</td>
-                                @foreach($cars as $car)
-                                    <td>{{ number_format($car->mileage ?? 0, 0, '.', ' ') }} км</td>
-                                @endforeach
-                            </tr>
-                            <tr>
-                                <td>Двигатель</td>
-                                @foreach($cars as $car)
-                                    <td>{{ $car->engine ?? '—' }}</td>
-                                @endforeach
-                            </tr>
-                            <tr>
-                                <td>КПП</td>
-                                @foreach($cars as $car)
-                                    <td>{{ $car->transmission ?? '—' }}</td>
-                                @endforeach
-                            </tr>
-                            <tr>
-                                <td>Цвет</td>
-                                @foreach($cars as $car)
-                                    <td>{{ $car->color ?? '—' }}</td>
-                                @endforeach
-                            </tr>
-                            <tr>
-                                <td>Описание</td>
-                                @foreach($cars as $car)
-                                    <td>{{ \Illuminate\Support\Str::limit($car->description, 120) }}</td>
-                                @endforeach
-                            </tr>
+                            @foreach([
+                                'Цена' => fn ($car) => number_format($car->price, 0, '.', ' ').' ₽',
+                                'Год' => fn ($car) => $car->year,
+                                'Пробег' => fn ($car) => number_format($car->mileage ?? 0, 0, '.', ' ').' км',
+                                'Двигатель' => fn ($car) => $car->engine ?? '—',
+                                'КПП' => fn ($car) => $car->transmission ?? '—',
+                                'Цвет' => fn ($car) => $car->color ?? '—',
+                            ] as $label => $value)
+                                <tr>
+                                    <th scope="row">{{ $label }}</th>
+                                    @foreach($cars as $car)
+                                        <td>{{ $value($car) }}</td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
 
                 <div class="compare-actions">
                     @foreach($cars as $car)
-                        <div class="stack-form compare-card">
-                            <img src="{{ $car->image }}" alt="{{ $car->display_name }}">
+                        <article class="panel compare-card">
+                            <img src="{{ $car->image }}" alt="{{ $car->display_name }}" loading="lazy">
                             <h3>{{ $car->display_name }}</h3>
+                            <p class="price price-sm">{{ number_format($car->price, 0, '.', ' ') }} ₽</p>
+                            <p class="record-meta">{{ $car->year }} • {{ $car->engine ?? '—' }} • {{ $car->transmission ?? '—' }}</p>
                             @include('cars.partials.actions', ['car' => $car])
                             <a class="button button-block" href="{{ route('cars.show', $car->slug) }}">Открыть карточку</a>
-                        </div>
+                        </article>
                     @endforeach
                 </div>
             @endif

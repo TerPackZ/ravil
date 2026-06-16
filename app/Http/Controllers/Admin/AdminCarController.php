@@ -49,11 +49,14 @@ class AdminCarController extends Controller
     {
         $validated = $this->validateCar($request, true);
         $validated['is_featured'] = $request->boolean('is_featured');
-        $validated['slug'] = SlugGenerator::generate(
-            $validated['brand'].'-'.$validated['model'].'-'.$validated['year'],
-            Car::class,
-            $car->id
-        );
+
+        $slugSource = $validated['brand'].'-'.$validated['model'].'-'.$validated['year'];
+        $currentSlugSource = $car->brand.'-'.$car->model.'-'.$car->year;
+
+        if ($slugSource !== $currentSlugSource) {
+            $validated['slug'] = SlugGenerator::generate($slugSource, Car::class, $car->id);
+        }
+
         $validated['image'] = $this->resolveImage($request, $car->image);
 
         $car->update($validated);
@@ -63,6 +66,10 @@ class AdminCarController extends Controller
 
     public function destroy(Car $car): RedirectResponse
     {
+        if ($car->applications()->exists() || $car->testDrives()->exists()) {
+            return back()->with('error', 'Нельзя удалить автомобиль, у которого есть заявки или записи на тест-драйв.');
+        }
+
         ImageUploader::deleteIfLocal($car->image);
         $car->delete();
 
@@ -80,7 +87,7 @@ class AdminCarController extends Controller
             'engine' => ['nullable', 'string', 'max:100'],
             'transmission' => ['nullable', 'string', 'max:100'],
             'color' => ['nullable', 'string', 'max:100'],
-            'description' => ['required', 'string'],
+            'description' => ['required', 'string', 'max:10000'],
             'image' => ['nullable', 'image', 'max:2048', 'mimes:jpeg,png,jpg,webp'],
             'image_url' => [$isUpdate ? 'nullable' : 'required_without:image', 'nullable', 'url'],
             'is_featured' => ['nullable', 'boolean'],

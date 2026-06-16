@@ -1,16 +1,17 @@
-@extends('layouts.app', ['title' => 'Редактировать автомобиль'])
+@extends('layouts.admin', ['title' => 'Редактировать автомобиль'])
 
 @section('content')
-    <section class="section">
-        <div class="container auth-wrap">
-            @include('admin.partials.nav')
-            <form class="auth-card" method="POST" action="{{ route('admin.cars.update', $car) }}" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-                <h1>Редактировать автомобиль</h1>
-                @include('admin.cars.form')
-                <button class="button" type="submit">Обновить</button>
-            </form>
-        </div>
-    </section>
+    <div class="admin-page-head">
+        <h1>Редактировать: {{ $car->display_name }}</h1>
+        <a class="button button-ghost" href="{{ route('admin.cars.index') }}">← К списку</a>
+    </div>
+
+    <div class="admin-form-wrap">
+        <form class="stack-form auth-card" method="POST" action="{{ route('admin.cars.update', $car) }}" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            @include('admin.cars.form')
+            <button class="button" type="submit">Обновить</button>
+        </form>
+    </div>
 @endsection

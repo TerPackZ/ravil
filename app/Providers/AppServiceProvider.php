@@ -2,7 +2,13 @@
 
 namespace App\Providers;
 
+use App\Enums\ApplicationStatus;
+use App\Enums\TestDriveStatus;
 use App\Http\Controllers\CompareController;
+use App\Models\Application;
+use App\Models\TestDrive;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,7 +21,22 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        View::composer(['layouts.app', 'cars.*', 'dashboard.*', 'home.*', 'admin.*'], function ($view): void {
+        Paginator::defaultView('vendor.pagination.default');
+
+        View::composer(['layouts.admin', 'admin.partials.nav'], function ($view): void {
+            $view->with('pendingApplications', Cache::remember(
+                'admin.pending_applications',
+                30,
+                fn () => Application::query()->where('status', ApplicationStatus::New)->count()
+            ));
+            $view->with('pendingTestDrives', Cache::remember(
+                'admin.pending_test_drives',
+                30,
+                fn () => TestDrive::query()->where('status', TestDriveStatus::New)->count()
+            ));
+        });
+
+        View::composer(['layouts.app', 'cars.*', 'dashboard.*', 'home.*'], function ($view): void {
             $request = request();
             $compareIds = CompareController::idsFromSession($request);
 

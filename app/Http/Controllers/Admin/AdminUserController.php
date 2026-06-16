@@ -31,9 +31,22 @@ class AdminUserController extends Controller
             'phone' => ['nullable', 'string', 'max:30'],
             'is_admin' => ['nullable', 'boolean'],
         ]);
-        $validated['is_admin'] = $request->boolean('is_admin');
 
-        $user->update($validated);
+        $willBeAdmin = $request->boolean('is_admin');
+
+        if ($user->is_admin && ! $willBeAdmin) {
+            if (User::query()->where('is_admin', true)->count() <= 1) {
+                return back()->with('error', 'Нельзя снять права у последнего администратора.');
+            }
+
+            if (auth()->id() === $user->id) {
+                return back()->with('error', 'Нельзя снять права администратора у самого себя.');
+            }
+        }
+
+        $user->fill(collect($validated)->except('is_admin')->all());
+        $user->is_admin = $willBeAdmin;
+        $user->save();
 
         return redirect()->route('admin.users.index')->with('success', 'Пользователь обновлен.');
     }
@@ -42,6 +55,10 @@ class AdminUserController extends Controller
     {
         if (auth()->id() === $user->id) {
             return back()->with('error', 'Нельзя удалить собственную учетную запись.');
+        }
+
+        if ($user->is_admin && User::query()->where('is_admin', true)->count() <= 1) {
+            return back()->with('error', 'Нельзя удалить последнего администратора.');
         }
 
         $user->delete();

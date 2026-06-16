@@ -21,10 +21,8 @@ class PasswordResetLinkController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        $status = Password::sendResetLink($request->only('email'));
+        Password::sendResetLink($request->only('email'));
 
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('success', 'Ссылка для восстановления пароля отправлена на email.')
-            : back()->withErrors(['email' => 'Пользователь с таким email не найден.']);
+        return back()->with('success', 'Если аккаунт с таким email существует, мы отправили ссылку для восстановления пароля.');
     }
 }

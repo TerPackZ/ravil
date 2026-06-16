@@ -3,11 +3,86 @@ import './bootstrap';
 const navToggle = document.querySelector('[data-nav-toggle]');
 const navMenu = document.querySelector('[data-nav-menu]');
 
+const closeNavMenu = () => {
+    if (!navMenu || !navToggle) {
+        return;
+    }
+
+    navMenu.classList.remove('is-open');
+    navToggle.setAttribute('aria-expanded', 'false');
+};
+
 if (navToggle && navMenu) {
     navToggle.addEventListener('click', () => {
-        navMenu.classList.toggle('is-open');
+        const isOpen = navMenu.classList.toggle('is-open');
+        navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!navMenu.classList.contains('is-open')) {
+            return;
+        }
+
+        if (navMenu.contains(event.target) || navToggle.contains(event.target)) {
+            return;
+        }
+
+        closeNavMenu();
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeNavMenu();
+        }
+    });
+
+    navMenu.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', closeNavMenu);
     });
 }
+
+const adminSidebar = document.querySelector('[data-admin-sidebar]');
+const adminSidebarToggle = document.querySelector('[data-admin-sidebar-toggle]');
+
+if (adminSidebar && adminSidebarToggle) {
+    const closeAdminSidebar = () => {
+        adminSidebar.classList.remove('is-open');
+        adminSidebarToggle.setAttribute('aria-expanded', 'false');
+    };
+
+    adminSidebarToggle.addEventListener('click', () => {
+        const isOpen = adminSidebar.classList.toggle('is-open');
+        adminSidebarToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!adminSidebar.classList.contains('is-open')) {
+            return;
+        }
+
+        if (adminSidebar.contains(event.target) || adminSidebarToggle.contains(event.target)) {
+            return;
+        }
+
+        closeAdminSidebar();
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeAdminSidebar();
+        }
+    });
+}
+
+document.querySelectorAll('[data-flash-dismiss]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const alert = button.closest('.flash-alert');
+
+        if (alert) {
+            alert.remove();
+        }
+    });
+});
 
 document.querySelectorAll('form[data-confirm]').forEach((form) => {
     form.addEventListener('submit', (event) => {
@@ -15,6 +90,13 @@ document.querySelectorAll('form[data-confirm]').forEach((form) => {
 
         if (message && !window.confirm(message)) {
             event.preventDefault();
+            return;
+        }
+
+        const submitButton = form.querySelector('[type="submit"]');
+
+        if (submitButton) {
+            submitButton.disabled = true;
         }
     });
 });
@@ -56,17 +138,39 @@ document.querySelectorAll('[data-credit-calculator]').forEach((calculator) => {
     const rateValue = calculator.querySelector('[data-rate-value]');
     const monthlyPayment = calculator.querySelector('[data-monthly-payment]');
 
+    if (!downPaymentInput || !termInput || !rateInput || !monthlyPayment) {
+        return;
+    }
+
     const update = () => {
         const downPayment = Number(downPaymentInput.value);
         const term = Number(termInput.value);
         const rate = Number(rateInput.value);
 
-        downPaymentValue.textContent = `${downPayment}%`;
-        termValue.textContent = `${term} мес.`;
-        rateValue.textContent = `${rate}%`;
+        if (downPaymentValue) {
+            downPaymentValue.textContent = `${downPayment}%`;
+        }
 
-        const payment = calculateMonthlyPayment(price, downPayment, term, rate);
-        monthlyPayment.textContent = formatCurrency(payment);
+        downPaymentInput.setAttribute('aria-valuenow', String(downPayment));
+        downPaymentInput.setAttribute('aria-valuetext', `${downPayment}%`);
+
+        if (termValue) {
+            termValue.textContent = `${term} мес.`;
+        }
+
+        termInput.setAttribute('aria-valuenow', String(term));
+        termInput.setAttribute('aria-valuetext', `${term} месяцев`);
+
+        if (rateValue) {
+            rateValue.textContent = `${rate}%`;
+        }
+
+        rateInput.setAttribute('aria-valuenow', String(rate));
+        rateInput.setAttribute('aria-valuetext', `${rate}%`);
+
+        monthlyPayment.textContent = formatCurrency(
+            calculateMonthlyPayment(price, downPayment, term, rate)
+        );
     };
 
     [downPaymentInput, termInput, rateInput].forEach((input) => {

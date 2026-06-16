@@ -44,7 +44,11 @@ class AdminNewsController extends Controller
     public function update(Request $request, News $news): RedirectResponse
     {
         $validated = $this->validateNews($request, true);
-        $validated['slug'] = SlugGenerator::generate($validated['title'], News::class, $news->id);
+
+        if ($validated['title'] !== $news->title) {
+            $validated['slug'] = SlugGenerator::generate($validated['title'], News::class, $news->id);
+        }
+
         $validated['image'] = $this->resolveImage($request, $news->image);
 
         $news->update($validated);
@@ -65,7 +69,7 @@ class AdminNewsController extends Controller
         return $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'excerpt' => ['required', 'string', 'max:500'],
-            'content' => ['required', 'string'],
+            'content' => ['required', 'string', 'max:50000'],
             'image' => ['nullable', 'image', 'max:2048', 'mimes:jpeg,png,jpg,webp'],
             'image_url' => [$isUpdate ? 'nullable' : 'required_without:image', 'nullable', 'url'],
             'published_at' => ['required', 'date'],

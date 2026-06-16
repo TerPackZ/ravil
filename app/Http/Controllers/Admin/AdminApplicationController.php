@@ -20,17 +20,22 @@ class AdminApplicationController extends Controller
 {
     public function index(Request $request): View
     {
-        $applicationStatus = $request->string('application_status')->toString();
-        $testDriveStatus = $request->string('test_drive_status')->toString();
+        $validated = $request->validate([
+            'application_status' => ['nullable', Rule::enum(ApplicationStatus::class)],
+            'test_drive_status' => ['nullable', Rule::enum(TestDriveStatus::class)],
+        ]);
+
+        $applicationStatus = $validated['application_status'] ?? null;
+        $testDriveStatus = $validated['test_drive_status'] ?? null;
 
         $applicationsQuery = Application::query()->with(['user', 'car'])->latest();
         $testDrivesQuery = TestDrive::query()->with(['user', 'car'])->latest();
 
-        if ($applicationStatus !== '') {
+        if ($applicationStatus !== null) {
             $applicationsQuery->where('status', $applicationStatus);
         }
 
-        if ($testDriveStatus !== '') {
+        if ($testDriveStatus !== null) {
             $testDrivesQuery->where('status', $testDriveStatus);
         }
 
@@ -41,8 +46,8 @@ class AdminApplicationController extends Controller
             'applicationStatuses' => ApplicationStatus::options(),
             'testDriveStatuses' => TestDriveStatus::options(),
             'filters' => [
-                'application_status' => $applicationStatus,
-                'test_drive_status' => $testDriveStatus,
+                'application_status' => $applicationStatus?->value ?? '',
+                'test_drive_status' => $testDriveStatus?->value ?? '',
             ],
         ]);
     }

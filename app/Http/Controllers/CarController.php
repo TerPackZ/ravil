@@ -11,17 +11,42 @@ use App\Models\TestDrive;
 use App\Support\AdminNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class CarController extends Controller
 {
     public function index(Request $request): View
     {
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'brand' => ['nullable', 'string', 'max:100'],
+            'year' => ['nullable', 'integer', 'min:2000', 'max:2100'],
+            'price_from' => ['nullable', 'integer', 'min:0'],
+            'price_to' => ['nullable', 'integer', 'min:0'],
+            'transmission' => ['nullable', 'string', 'max:100'],
+            'mileage_to' => ['nullable', 'integer', 'min:0'],
+            'sort' => ['nullable', Rule::in(['latest', 'price_asc', 'price_desc', 'year_desc', 'year_asc'])],
+        ]);
+
+        if (
+            $request->filled('price_from')
+            && $request->filled('price_to')
+            && (int) $request->input('price_to') < (int) $request->input('price_from')
+        ) {
+            return redirect()
+                ->route('cars.index', $request->except('price_to'))
+                ->withErrors(['price_to' => 'Цена «до» не может быть меньше цены «от».'])
+                ->withInput();
+        }
+
         $query = Car::query();
 
         $query
             ->when($request->filled('search'), function ($builder) use ($request): void {
-                $search = '%'.$request->string('search').'%';
+                $term = addcslashes($request->string('search')->toString(), '%_\\');
+                $search = '%'.$term.'%';
                 $builder->where(function ($nested) use ($search): void {
                     $nested->where('brand', 'like', $search)
                         ->orWhere('model', 'like', $search)
@@ -58,7 +83,26 @@ class CarController extends Controller
     {
         return view('cars.show', [
             'car' => $car,
-            'relatedCars' => Car::query()->whereKeyNot($car->id)->where('brand', $car->brand)->take(3)->get(),
+            'relatedCars' => (function () use ($car) {
+                $sameBrand = Car::query()
+                    ->whereKeyNot($car->id)
+                    ->where('brand', $car->brand)
+                    ->take(3)
+                    ->get();
+
+                if ($sameBrand->count() >= 3) {
+                    return $sameBrand;
+                }
+
+                return $sameBrand->merge(
+                    Car::query()
+                        ->whereKeyNot($car->id)
+                        ->whereNotIn('id', $sameBrand->pluck('id'))
+                        ->latest()
+                        ->take(3 - $sameBrand->count())
+                        ->get()
+                );
+            })(),
             'hasActiveApplication' => auth()->check()
                 ? Application::query()
                     ->where('user_id', auth()->id())
@@ -78,26 +122,33 @@ class CarController extends Controller
 
     public function apply(Request $request, Car $car): RedirectResponse
     {
-        $hasActiveApplication = Application::query()
-            ->where('user_id', $request->user()->id)
-            ->where('car_id', $car->id)
-            ->whereIn('status', ApplicationStatus::activeValues())
-            ->exists();
-
-        if ($hasActiveApplication) {
-            return back()->with('error', 'У вас уже есть активная заявка на этот автомобиль.');
-        }
-
         $validated = $request->validate([
             'message' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $application = Application::query()->create([
-            'user_id' => $request->user()->id,
-            'car_id' => $car->id,
-            'message' => $validated['message'] ?? null,
-            'status' => ApplicationStatus::New,
-        ]);
+        $application = DB::transaction(function () use ($request, $car, $validated) {
+            $hasActiveApplication = Application::query()
+                ->where('user_id', $request->user()->id)
+                ->where('car_id', $car->id)
+                ->whereIn('status', ApplicationStatus::activeValues())
+                ->lockForUpdate()
+                ->exists();
+
+            if ($hasActiveApplication) {
+                return null;
+            }
+
+            return Application::query()->create([
+                'user_id' => $request->user()->id,
+                'car_id' => $car->id,
+                'message' => $validated['message'] ?? null,
+                'status' => ApplicationStatus::New,
+            ]);
+        });
+
+        if ($application === null) {
+            return back()->with('error', 'У вас уже есть активная заявка на этот автомобиль.');
+        }
 
         AdminNotifier::notify(new NewApplicationMail($application->load(['user', 'car'])));
 
