@@ -6,16 +6,16 @@
             <div>
                 <p class="eyebrow">Контакты</p>
                 <h1>Свяжитесь с командой NewCar</h1>
-                <p>Ответим по наличию автомобилей, поможем с выбором и подберем удобное время для визита.</p>
+                <p class="contact-intro">Ответим по наличию автомобилей, поможем с выбором и подберем удобное время для визита.</p>
                 <div class="contact-list">
-                    <p>Телефон: +7 (900) 123-45-67</p>
-                    <p>Email: info@newcar.local</p>
+                    <p>Телефон: <a class="footer-link" href="tel:+79001234567">+7 (900) 123-45-67</a></p>
+                    <p>Email: <a class="footer-link" href="mailto:info@newcar.local">info@newcar.local</a></p>
                     <p>Адрес: г. Омск, ул. Автомобильная, 10</p>
                 </div>
             </div>
-            <form class="stack-form auth-card" method="POST" action="{{ route('contacts.store') }}">
+            <form class="stack-form auth-card contact-form" method="POST" action="{{ route('contacts.store') }}">
                 @csrf
-                <h2>Напишите нам</h2>
+                <h2 class="form-title">Напишите нам</h2>
                 <div class="field @error('name') field-has-error @enderror">
                     <label class="field-label" for="name">Ваше имя</label>
                     <input id="name" type="text" name="name" value="{{ old('name') }}" required>

@@ -26,14 +26,14 @@
             <h3>Сообщения</h3>
             <p class="stat-value">{{ $stats['contact_messages'] }}</p>
         </a>
-        <div class="info-card stat-card">
+        <div class="info-card stat-card stat-card-static" aria-label="Избранное: {{ $stats['favorites'] }} добавлений">
             <h3>Избранное</h3>
             <p class="stat-value">{{ $stats['favorites'] }}</p>
             <p class="record-meta">Всего добавлений клиентами</p>
         </div>
     </div>
 
-    <div class="dashboard-columns">
+    <div class="dashboard-columns admin-panels-duo">
         <div class="panel">
             <h2>Последние заявки</h2>
             @forelse($recentApplications as $application)
@@ -45,7 +45,7 @@
                     <span class="badge badge-{{ $application->status->value }}">{{ $application->status->label() }}</span>
                 </div>
             @empty
-                <p class="record-meta">Заявок пока нет.</p>
+                @include('admin.partials.empty', ['message' => 'Заявок пока нет.'])
             @endforelse
             <a class="panel-link" href="{{ route('admin.applications.index') }}">Все заявки →</a>
         </div>
@@ -61,7 +61,7 @@
                     <span class="badge badge-{{ $testDrive->status->value }}">{{ $testDrive->status->label() }}</span>
                 </div>
             @empty
-                <p class="record-meta">Записей пока нет.</p>
+                @include('admin.partials.empty', ['message' => 'Записей пока нет.'])
             @endforelse
             <a class="panel-link" href="{{ route('admin.applications.index') }}">Все записи →</a>
         </div>
@@ -74,10 +74,10 @@
                 <a class="list-row-link" href="{{ route('admin.cars.edit', $car) }}">
                     <strong>{{ $car->display_name }}</strong>
                 </a>
-                <span>{{ $car->applications_count }} заявок</span>
+                <span class="list-row-meta">{{ $car->applications_count }} заявок</span>
             </div>
         @empty
-            <p class="record-meta">Данных пока нет.</p>
+            @include('admin.partials.empty', ['message' => 'Данных пока нет.'])
         @endforelse
     </div>
 @endsection

@@ -26,15 +26,7 @@
                 </div>
                 <div class="news-grid">
                     @foreach($relatedNews as $news)
-                        <article class="news-card">
-                            <img src="{{ $news->image }}" alt="{{ $news->title }}" loading="lazy">
-                            <div class="news-card-body">
-                                <span>{{ $news->published_at->format('d.m.Y') }}</span>
-                                <h3>{{ $news->title }}</h3>
-                                <p>{{ $news->excerpt }}</p>
-                                <a class="text-link" href="{{ route('news.show', $news->slug) }}">Читать</a>
-                            </div>
-                        </article>
+                        @include('news.partials.card', ['news' => $news])
                     @endforeach
                 </div>
             </div>

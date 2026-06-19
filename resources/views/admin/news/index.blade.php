@@ -21,7 +21,11 @@
                         <td>{{ $news->title }}</td>
                         <td>{{ $news->published_at->format('d.m.Y') }}</td>
                         <td class="table-actions">
-                            <a href="{{ route('news.show', $news->slug) }}" target="_blank" rel="noopener noreferrer">На сайте<span class="sr-only"> (откроется в новой вкладке)</span></a>
+                            @if($news->isPubliclyVisible())
+                                <a href="{{ route('news.show', $news->slug) }}" target="_blank" rel="noopener noreferrer">На сайте<span class="sr-only"> (откроется в новой вкладке)</span></a>
+                            @else
+                                <span class="record-meta" title="Новость ещё не опубликована">Не опубликовано</span>
+                            @endif
                             <a href="{{ route('admin.news.edit', $news) }}">Редактировать</a>
                             <form method="POST" action="{{ route('admin.news.destroy', $news) }}" data-confirm="Удалить эту новость?">
                                 @csrf
@@ -32,7 +36,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3">Новостей пока нет.</td>
+                        <td colspan="3" class="table-empty">Новостей пока нет. <a href="{{ route('admin.news.create') }}">Добавить первую</a></td>
                     </tr>
                 @endforelse
             </tbody>

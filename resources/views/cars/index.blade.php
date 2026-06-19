@@ -29,7 +29,10 @@
                     @endforeach
                 </select>
                 <input type="number" name="price_from" placeholder="Цена от" value="{{ $filters['price_from'] ?? '' }}" aria-label="Цена от">
-                <input type="number" name="price_to" placeholder="Цена до" value="{{ $filters['price_to'] ?? '' }}" aria-label="Цена до">
+                <div class="field @error('price_to') field-has-error @enderror">
+                    <input type="number" name="price_to" placeholder="Цена до" value="{{ $filters['price_to'] ?? '' }}" aria-label="Цена до">
+                    @error('price_to')<span class="field-error-text">{{ $message }}</span>@enderror
+                </div>
                 <input type="number" name="mileage_to" placeholder="Пробег до, км" value="{{ $filters['mileage_to'] ?? '' }}" aria-label="Пробег до">
                 <select name="sort" aria-label="Сортировка">
                     <option value="latest" @selected(($filters['sort'] ?? 'latest') === 'latest')>Сначала новые</option>
@@ -40,7 +43,7 @@
                 </select>
                 <div class="filters-actions">
                     <button class="button" type="submit">Применить</button>
-                    @if(array_filter($filters ?? []))
+                    @if($hasActiveFilters ?? false)
                         <a class="button button-ghost" href="{{ route('cars.index') }}">Сбросить</a>
                     @endif
                 </div>
@@ -48,21 +51,7 @@
 
             <div class="card-grid">
                 @forelse($cars as $car)
-                    <article class="car-card">
-                        <img src="{{ $car->image }}" alt="{{ $car->display_name }}" loading="lazy">
-                        <div class="car-card-body">
-                            <div class="car-card-top">
-                                <div>
-                                    <h3>{{ $car->display_name }}</h3>
-                                    <p>{{ $car->year }} • {{ $car->engine }}</p>
-                                </div>
-                                <span class="price price-sm">{{ number_format($car->price, 0, '.', ' ') }} ₽</span>
-                            </div>
-                            <p>{{ \Illuminate\Support\Str::limit($car->description, 110) }}</p>
-                            @include('cars.partials.actions', ['car' => $car])
-                            <a class="button button-block" href="{{ route('cars.show', $car->slug) }}">Открыть карточку</a>
-                        </div>
-                    </article>
+                    @include('cars.partials.card', ['car' => $car])
                 @empty
                     <div class="empty-state">
                         <p>По заданным фильтрам автомобили не найдены.</p>

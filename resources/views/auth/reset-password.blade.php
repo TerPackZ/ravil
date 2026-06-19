@@ -22,6 +22,7 @@
                     <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password">
                 </div>
                 <button class="button" type="submit">Сохранить пароль</button>
+                <p><a class="text-link" href="{{ route('login') }}">← Вернуться ко входу</a></p>
             </form>
         </div>
     </section>

@@ -59,7 +59,7 @@ class CompareController extends Controller
     {
         $request->session()->forget('compare_cars');
 
-        return redirect()->route('cars.index')->with('success', 'Список сравнения очищен.');
+        return redirect()->route('cars.compare')->with('success', 'Список сравнения очищен.');
     }
 
     /** @return list<int> */

@@ -10,9 +10,9 @@ class DashboardController extends Controller
     public function index(Request $request): View
     {
         $user = $request->user()->load([
-            'applications.car',
-            'testDrives.car',
-            'favoriteCars',
+            'applications' => fn ($query) => $query->with('car')->latest(),
+            'testDrives' => fn ($query) => $query->with('car')->latest(),
+            'favoriteCars' => fn ($query) => $query->orderByPivot('created_at', 'desc'),
         ]);
 
         return view('dashboard.index', compact('user'));

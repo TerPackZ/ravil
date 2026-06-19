@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\ApplicationStatus;
+use App\Enums\TestDriveStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Car;
 use App\Support\ImageUploader;
@@ -66,8 +68,11 @@ class AdminCarController extends Controller
 
     public function destroy(Car $car): RedirectResponse
     {
-        if ($car->applications()->exists() || $car->testDrives()->exists()) {
-            return back()->with('error', 'Нельзя удалить автомобиль, у которого есть заявки или записи на тест-драйв.');
+        if (
+            $car->applications()->whereIn('status', ApplicationStatus::activeValues())->exists()
+            || $car->testDrives()->whereIn('status', TestDriveStatus::activeValues())->exists()
+        ) {
+            return back()->with('error', 'Нельзя удалить автомобиль с активными заявками или записями на тест-драйв.');
         }
 
         ImageUploader::deleteIfLocal($car->image);

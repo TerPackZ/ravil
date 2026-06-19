@@ -34,35 +34,35 @@
                         <button class="button button-ghost button-sm" type="submit">Выйти</button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" @class(['is-active' => request()->routeIs('login')])>Вход</a>
-                    <a class="button button-sm" href="{{ route('register') }}">Регистрация</a>
+                    <a href="{{ route('login') }}" @class(['is-active' => request()->routeIs('login', 'register', 'password.*')])>Вход</a>
+                    <a class="button button-sm @class(['is-active' => request()->routeIs('register')])" href="{{ route('register') }}">Регистрация</a>
                 @endauth
             </nav>
         </div>
     </header>
 
     <main id="main-content">
-        <div class="container">
+        <div class="flash-container">
             @include('partials.flash')
         </div>
         @yield('content')
     </main>
 
     <footer class="site-footer">
-        <div class="container footer-grid">
-            <div>
+        <div class="container footer-grid footer-grid-thirds">
+            <div class="footer-block">
                 <h3>NewCar</h3>
-                <p>Современный автосалон с проверенными автомобилями, прозрачными условиями и удобным сервисом.</p>
+                <p class="footer-text">Современный автосалон с проверенными автомобилями, прозрачными условиями и удобным сервисом.</p>
             </div>
-            <div>
+            <div class="footer-block">
                 <h3>Контакты</h3>
-                <p>г. Омск, ул. Автомобильная, 10</p>
-                <p>+7 (900) 123-45-67</p>
-                <p>info@newcar.local</p>
+                <p class="footer-text">г. Омск, ул. Автомобильная, 10</p>
+                <p class="footer-text"><a class="footer-link" href="tel:+79001234567">+7 (900) 123-45-67</a></p>
+                <p class="footer-text"><a class="footer-link" href="mailto:info@newcar.local">info@newcar.local</a></p>
             </div>
-            <div>
+            <div class="footer-block">
                 <h3>Режим работы</h3>
-                <p>Пн-Вс: 09:00 - 20:00</p>
+                <p class="footer-text">Пн-Вс: 09:00 - 20:00</p>
             </div>
         </div>
     </footer>

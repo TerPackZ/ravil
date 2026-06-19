@@ -12,6 +12,7 @@ use App\Models\ContactMessage;
 use App\Models\TestDrive;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Support\AdminCache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -62,6 +63,7 @@ class AdminApplicationController extends Controller
         $application->update($validated);
 
         if ($previousStatus !== $application->status) {
+            AdminCache::forgetPendingCounts();
             Mail::to($application->user->email)->send(
                 new ApplicationStatusChangedMail($application->load(['user', 'car']))
             );
@@ -80,6 +82,7 @@ class AdminApplicationController extends Controller
         $testDrive->update($validated);
 
         if ($previousStatus !== $testDrive->status) {
+            AdminCache::forgetPendingCounts();
             Mail::to($testDrive->user->email)->send(
                 new TestDriveStatusChangedMail($testDrive->load(['user', 'car']))
             );

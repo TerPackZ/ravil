@@ -21,21 +21,21 @@
                 </div>
 
                 <div class="dashboard-stats">
-                    <div class="info-card">
+                    <a class="info-card stat-card dashboard-stat-link" href="#applications">
                         <h3>Заявки</h3>
                         <p class="stat-value">{{ $user->applications->count() }}</p>
-                    </div>
-                    <div class="info-card">
+                    </a>
+                    <a class="info-card stat-card dashboard-stat-link" href="#test-drives">
                         <h3>Тест-драйвы</h3>
                         <p class="stat-value">{{ $user->testDrives->count() }}</p>
-                    </div>
-                    <div class="info-card">
+                    </a>
+                    <a class="info-card stat-card dashboard-stat-link" href="#favorites">
                         <h3>Избранное</h3>
                         <p class="stat-value">{{ $user->favoriteCars->count() }}</p>
-                    </div>
+                    </a>
                 </div>
 
-                <div class="panel">
+                <div class="panel" id="favorites">
                     <div class="section-head">
                         <h2>Избранные автомобили</h2>
                         @if($user->favoriteCars->isNotEmpty())
@@ -50,22 +50,14 @@
                     @else
                         <div class="card-grid card-grid-in-panel">
                             @foreach($user->favoriteCars as $car)
-                                <article class="car-card">
-                                    <img src="{{ $car->image }}" alt="{{ $car->display_name }}" loading="lazy">
-                                    <div class="car-card-body">
-                                        <h3>{{ $car->display_name }}</h3>
-                                        <p class="price price-sm">{{ number_format($car->price, 0, '.', ' ') }} ₽</p>
-                                        @include('cars.partials.actions', ['car' => $car])
-                                        <a class="button button-block" href="{{ route('cars.show', $car->slug) }}">Открыть</a>
-                                    </div>
-                                </article>
+                                @include('cars.partials.card', ['car' => $car, 'showDescription' => false])
                             @endforeach
                         </div>
                     @endif
                 </div>
 
                 <div class="dashboard-columns">
-                    <div class="panel">
+                    <div class="panel" id="applications">
                         <h2>Мои заявки</h2>
                         @forelse($user->applications as $application)
                             <div class="list-row">
@@ -76,10 +68,13 @@
                                 <span class="badge badge-{{ $application->status->value }}">{{ $application->status->label() }}</span>
                             </div>
                         @empty
-                            <p class="record-meta">Заявок пока нет. Выберите автомобиль в каталоге и оформите заявку.</p>
+                            <div class="empty-state empty-state-compact">
+                                <p>Заявок пока нет. Выберите автомобиль в каталоге и оформите заявку.</p>
+                                <a class="button button-ghost" href="{{ route('cars.index') }}">Перейти в каталог</a>
+                            </div>
                         @endforelse
                     </div>
-                    <div class="panel">
+                    <div class="panel" id="test-drives">
                         <h2>Записи на тест-драйв</h2>
                         @forelse($user->testDrives as $testDrive)
                             <div class="list-row">
@@ -90,7 +85,10 @@
                                 <span class="badge badge-{{ $testDrive->status->value }}">{{ $testDrive->status->label() }}</span>
                             </div>
                         @empty
-                            <p class="record-meta">Записей пока нет. На странице автомобиля можно выбрать удобное время.</p>
+                            <div class="empty-state empty-state-compact">
+                                <p>Записей пока нет. На странице автомобиля можно выбрать удобное время.</p>
+                                <a class="button button-ghost" href="{{ route('cars.index') }}">Перейти в каталог</a>
+                            </div>
                         @endforelse
                     </div>
                 </div>

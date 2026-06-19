@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class AdminNotifier
@@ -15,6 +16,8 @@ class AdminNotifier
     public static function notify(mixed $mailable): void
     {
         if (! self::exists()) {
+            Log::warning('Admin notification skipped: no admin user or mail.admin_address configured.');
+
             return;
         }
 

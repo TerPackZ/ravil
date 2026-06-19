@@ -29,6 +29,11 @@ class News extends Model
     /** @param Builder<News> $query */
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('published_at', '<=', now());
+        return $query->whereNotNull('published_at')->where('published_at', '<=', now());
+    }
+
+    public function isPubliclyVisible(): bool
+    {
+        return $this->published_at !== null && $this->published_at->lte(now());
     }
 }

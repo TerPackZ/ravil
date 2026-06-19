@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1400">
+    <title>Структура веб-приложения NewCar</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2933;
+            padding: 40px;
+            width: 1360px;
+        }
+        .page {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.08);
+            padding: 36px 40px 40px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #5b6573;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+        .columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .block {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .block-header {
+            padding: 12px 16px;
+            font-weight: 700;
+            font-size: 15px;
+            color: #fff;
+        }
+        .block-header.public { background: #c56a2d; }
+        .block-header.admin { background: #1f2933; }
+        .block-body { padding: 14px 16px 16px; }
+        .page-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #c56a2d;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+        .block.admin .page-item { border-left-color: #1f2933; }
+        .page-item strong { min-width: 148px; font-size: 13px; }
+        .page-item span { color: #5b6573; }
+        .flow {
+            border: 2px dashed #c56a2d;
+            border-radius: 12px;
+            padding: 18px 20px;
+            background: #fffaf6;
+        }
+        .flow-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #9f4f1d;
+        }
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 12px;
+        }
+        .node {
+            background: #fff;
+            border: 1.5px solid #c56a2d;
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .node.auth { border-color: #3b82f6; color: #1d4ed8; }
+        .node.admin { border-color: #1f2933; background: #1f2933; color: #fff; }
+        .arrow { color: #c56a2d; font-weight: 700; font-size: 16px; }
+        .footer-note {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #5b6573;
+            line-height: 1.5;
+            text-align: center;
+            padding: 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <h1>Структура веб-приложения «NewCar»</h1>
+        <p class="subtitle">Клиентская и административная части системы</p>
+
+        <div class="columns">
+            <div class="block">
+                <div class="block-header public">Публичная часть (клиентский интерфейс)</div>
+                <div class="block-body">
+                    <div class="page-item"><strong>Главная</strong><span>рекомендуемые авто и последние новости</span></div>
+                    <div class="page-item"><strong>Каталог</strong><span>список авто: поиск, фильтрация, сортировка</span></div>
+                    <div class="page-item"><strong>Карточка авто</strong><span>описание, калькулятор, заявка, тест-драйв</span></div>
+                    <div class="page-item"><strong>Сравнение</strong><span>таблица характеристик выбранных моделей</span></div>
+                    <div class="page-item"><strong>Новости</strong><span>список новостей и акций</span></div>
+                    <div class="page-item"><strong>Страница новости</strong><span>полный текст публикации</span></div>
+                    <div class="page-item"><strong>Контакты</strong><span>форма обратной связи и контакты</span></div>
+                    <div class="page-item"><strong>О нас</strong><span>информация об автосалоне</span></div>
+                    <div class="page-item"><strong>Регистрация</strong><span>создание учётной записи</span></div>
+                    <div class="page-item"><strong>Авторизация</strong><span>вход в систему</span></div>
+                    <div class="page-item"><strong>Восстановление пароля</strong><span>запрос и установка нового пароля</span></div>
+                    <div class="page-item"><strong>Личный кабинет</strong><span>заявки, тест-драйвы, избранное</span></div>
+                    <div class="page-item"><strong>Профиль</strong><span>редактирование личных данных</span></div>
+                </div>
+            </div>
+
+            <div class="block admin">
+                <div class="block-header admin">Административная панель (/admin)</div>
+                <div class="block-body">
+                    <div class="page-item"><strong>Дашборд</strong><span>общая статистика по системе</span></div>
+                    <div class="page-item"><strong>Автомобили</strong><span>управление каталогом</span></div>
+                    <div class="page-item"><strong>Новости</strong><span>публикация и редактирование</span></div>
+                    <div class="page-item"><strong>Пользователи</strong><span>управление учётными записями</span></div>
+                    <div class="page-item"><strong>Заявки и обращения</strong><span>заявки, тест-драйвы, сообщения</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flow">
+            <div class="flow-title">Логика переходов между страницами</div>
+            <div class="flow-row">
+                <span class="node">Главная / Каталог</span>
+                <span class="arrow">→</span>
+                <span class="node">Карточка авто</span>
+                <span class="arrow">→</span>
+                <span class="node">Сравнение</span>
+                <span class="arrow">→</span>
+                <span class="node auth">Авторизация</span>
+                <span class="arrow">→</span>
+                <span class="node">Заявка / Тест-драйв</span>
+                <span class="arrow">→</span>
+                <span class="node">Личный кабинет</span>
+            </div>
+            <div class="flow-row" style="margin-top: 12px;">
+                <span class="node admin">Администратор</span>
+                <span class="arrow">→</span>
+                <span class="node admin">Админ-панель</span>
+                <span style="color:#5b6573; font-size:12px; margin-left:8px;">(отдельный защищённый интерфейс, без смешивания с клиентской частью)</span>
+            </div>
+        </div>
+
+        <p class="footer-note">
+            Пользователь начинает работу с главной или каталога, переходит к карточке автомобиля, сравнивает модели,
+            при необходимости авторизуется и оформляет заявку или запись на тест-драйв.
+            Администратор работает в отдельной части системы.
+        </p>
+    </div>
+</body>
+</html>

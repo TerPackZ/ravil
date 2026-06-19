@@ -8,6 +8,8 @@ use App\Mail\NewApplicationMail;
 use App\Models\Application;
 use App\Models\Car;
 use App\Models\TestDrive;
+use App\Models\User;
+use App\Support\AdminCache;
 use App\Support\AdminNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,6 +52,8 @@ class CarController extends Controller
                 $builder->where(function ($nested) use ($search): void {
                     $nested->where('brand', 'like', $search)
                         ->orWhere('model', 'like', $search)
+                        ->orWhere('engine', 'like', $search)
+                        ->orWhere('color', 'like', $search)
                         ->orWhere('description', 'like', $search);
                 });
             })
@@ -70,12 +74,22 @@ class CarController extends Controller
             default => $query->latest(),
         };
 
+        $filters = $request->only(['search', 'brand', 'year', 'price_from', 'price_to', 'transmission', 'mileage_to', 'sort']);
+        $hasActiveFilters = collect($filters)->filter(function ($value, $key) {
+            if ($key === 'sort') {
+                return filled($value) && $value !== 'latest';
+            }
+
+            return filled($value);
+        })->isNotEmpty();
+
         return view('cars.index', [
             'cars' => $query->paginate(9)->withQueryString(),
             'brands' => Car::query()->select('brand')->distinct()->orderBy('brand')->pluck('brand'),
             'years' => Car::query()->select('year')->distinct()->orderByDesc('year')->pluck('year'),
             'transmissions' => Car::query()->select('transmission')->whereNotNull('transmission')->distinct()->orderBy('transmission')->pluck('transmission'),
-            'filters' => $request->only(['search', 'brand', 'year', 'price_from', 'price_to', 'transmission', 'mileage_to', 'sort']),
+            'filters' => $filters,
+            'hasActiveFilters' => $hasActiveFilters,
         ]);
     }
 
@@ -127,6 +141,8 @@ class CarController extends Controller
         ]);
 
         $application = DB::transaction(function () use ($request, $car, $validated) {
+            User::query()->whereKey($request->user()->id)->lockForUpdate()->first();
+
             $hasActiveApplication = Application::query()
                 ->where('user_id', $request->user()->id)
                 ->where('car_id', $car->id)
@@ -150,6 +166,7 @@ class CarController extends Controller
             return back()->with('error', 'У вас уже есть активная заявка на этот автомобиль.');
         }
 
+        AdminCache::forgetPendingCounts();
         AdminNotifier::notify(new NewApplicationMail($application->load(['user', 'car'])));
 
         return back()->with('success', 'Заявка успешно отправлена.');

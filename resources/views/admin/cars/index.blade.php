@@ -22,7 +22,7 @@
                         <td>
                             <strong>{{ $car->display_name }}</strong>
                             @if($car->is_featured)
-                                <span class="badge badge-in_progress">На главной</span>
+                                <span class="badge badge-featured">На главной</span>
                             @endif
                         </td>
                         <td>{{ $car->year }}</td>
@@ -39,7 +39,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4">Автомобили не добавлены.</td>
+                        <td colspan="4" class="table-empty">Автомобили не добавлены. <a href="{{ route('admin.cars.create') }}">Добавить первый</a></td>
                     </tr>
                 @endforelse
             </tbody>

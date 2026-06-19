@@ -6,7 +6,7 @@
             <div class="page-header page-header-with-action">
                 <div>
                     <h1>Сравнение автомобилей</h1>
-                    <p class="page-subtitle compare-slot-label">
+                    <p class="page-subtitle">
                         @if($cars->isNotEmpty())
                             Выбрано {{ $cars->count() }} из 3 автомобилей
                         @else
@@ -69,7 +69,7 @@
                             <p class="price price-sm">{{ number_format($car->price, 0, '.', ' ') }} ₽</p>
                             <p class="record-meta">{{ $car->year }} • {{ $car->engine ?? '—' }} • {{ $car->transmission ?? '—' }}</p>
                             @include('cars.partials.actions', ['car' => $car])
-                            <a class="button button-block" href="{{ route('cars.show', $car->slug) }}">Открыть карточку</a>
+                            <a class="button button-block" href="{{ route('cars.show', $car->slug) }}">Подробнее</a>
                         </article>
                     @endforeach
                 </div>

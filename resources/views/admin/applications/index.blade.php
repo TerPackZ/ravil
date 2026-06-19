@@ -26,7 +26,7 @@
         </div>
     </form>
 
-    <div class="dashboard-columns">
+    <div class="dashboard-columns admin-panels-duo">
         <div class="panel">
             <h2>Заявки на покупку</h2>
             @forelse($applications as $application)
@@ -51,7 +51,7 @@
                     </form>
                 </div>
             @empty
-                <p class="record-meta">Заявок нет.</p>
+                @include('admin.partials.empty', ['message' => 'Заявок нет.'])
             @endforelse
             <div class="pagination-wrap">{{ $applications->links() }}</div>
         </div>
@@ -80,7 +80,7 @@
                     </form>
                 </div>
             @empty
-                <p class="record-meta">Записей нет.</p>
+                @include('admin.partials.empty', ['message' => 'Записей нет.'])
             @endforelse
             <div class="pagination-wrap">{{ $testDrives->links() }}</div>
         </div>
@@ -98,7 +98,7 @@
                 <p class="record-text">{{ $message->message }}</p>
             </div>
         @empty
-            <p class="record-meta">Сообщений нет.</p>
+            @include('admin.partials.empty', ['message' => 'Сообщений нет.'])
         @endforelse
         <div class="pagination-wrap">{{ $contactMessages->links() }}</div>
     </div>

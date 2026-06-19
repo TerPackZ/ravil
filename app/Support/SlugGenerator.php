@@ -13,6 +13,9 @@ class SlugGenerator
     public static function generate(string $base, string $modelClass, ?int $exceptId = null): string
     {
         $slug = Str::slug($base);
+        if ($slug === '') {
+            $slug = 'item-'.Str::lower(Str::random(8));
+        }
         $original = $slug;
         $suffix = 1;
 

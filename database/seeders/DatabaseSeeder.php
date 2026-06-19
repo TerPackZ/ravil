@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
                 'transmission' => 'AT',
                 'color' => 'Белый перламутр',
                 'description' => 'Бизнес-седан с высоким уровнем комфорта, современными системами безопасности и экономичным гибридным двигателем.',
-                'image' => 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80',
+                'image' => '/images/cars/toyota-camry.jpg',
                 'is_featured' => true,
             ],
             [
@@ -57,7 +57,7 @@ class DatabaseSeeder extends Seeder
                 'transmission' => 'AT',
                 'color' => 'Черный металлик',
                 'description' => 'Премиальный кроссовер с динамичным характером, просторным салоном и продуманной цифровой экосистемой.',
-                'image' => 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80',
+                'image' => '/images/cars/bmw-x5.jpg',
                 'is_featured' => true,
             ],
             [
@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
                 'transmission' => 'AT',
                 'color' => 'Серый',
                 'description' => 'Городской SUV с выразительным дизайном, вместительным багажником и комфортной подвеской.',
-                'image' => 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80',
+                'image' => '/images/cars/kia-sportage.jpg',
                 'is_featured' => true,
             ],
             [
@@ -85,7 +85,7 @@ class DatabaseSeeder extends Seeder
                 'transmission' => 'AT',
                 'color' => 'Синий',
                 'description' => 'Элегантный седан для тех, кто ценит статус, комфорт и сбалансированную управляемость.',
-                'image' => 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80',
+                'image' => '/images/cars/mercedes-e200.jpg',
                 'is_featured' => false,
             ],
         ];
@@ -100,7 +100,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'spring-offer',
                 'excerpt' => 'Специальные условия на популярные модели до конца месяца.',
                 'content' => 'В автосалоне NewCar стартовала сезонная акция с выгодными условиями на покупку новых автомобилей и расширенными программами трейд-ин.',
-                'image' => 'https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=1200&q=80',
+                'image' => '/images/news/spring-offer.jpg',
                 'published_at' => now()->subDays(3),
             ],
             [
@@ -108,7 +108,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'new-showroom',
                 'excerpt' => 'Приглашаем оценить новый интерьер, зону выдачи и клиентский лаунж.',
                 'content' => 'Мы обновили пространство шоурума, чтобы выбор автомобиля стал еще комфортнее: больше света, удобные переговорные и цифровые конфигураторы.',
-                'image' => 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80',
+                'image' => '/images/news/new-showroom.jpg',
                 'published_at' => now()->subWeek(),
             ],
         ];

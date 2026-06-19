@@ -43,29 +43,36 @@ if (navToggle && navMenu) {
 
 const adminSidebar = document.querySelector('[data-admin-sidebar]');
 const adminSidebarToggle = document.querySelector('[data-admin-sidebar-toggle]');
+const adminSidebarBackdrop = document.querySelector('[data-admin-sidebar-backdrop]');
 
 if (adminSidebar && adminSidebarToggle) {
     const closeAdminSidebar = () => {
         adminSidebar.classList.remove('is-open');
         adminSidebarToggle.setAttribute('aria-expanded', 'false');
+
+        if (adminSidebarBackdrop) {
+            adminSidebarBackdrop.classList.remove('is-visible');
+        }
+    };
+
+    const openAdminSidebar = () => {
+        adminSidebar.classList.add('is-open');
+        adminSidebarToggle.setAttribute('aria-expanded', 'true');
+
+        if (adminSidebarBackdrop) {
+            adminSidebarBackdrop.classList.add('is-visible');
+        }
     };
 
     adminSidebarToggle.addEventListener('click', () => {
-        const isOpen = adminSidebar.classList.toggle('is-open');
-        adminSidebarToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        if (adminSidebar.classList.contains('is-open')) {
+            closeAdminSidebar();
+        } else {
+            openAdminSidebar();
+        }
     });
 
-    document.addEventListener('click', (event) => {
-        if (!adminSidebar.classList.contains('is-open')) {
-            return;
-        }
-
-        if (adminSidebar.contains(event.target) || adminSidebarToggle.contains(event.target)) {
-            return;
-        }
-
-        closeAdminSidebar();
-    });
+    adminSidebarBackdrop?.addEventListener('click', closeAdminSidebar);
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {

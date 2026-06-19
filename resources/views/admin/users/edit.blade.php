@@ -10,17 +10,20 @@
         <form class="stack-form auth-card" method="POST" action="{{ route('admin.users.update', $user) }}">
             @csrf
             @method('PUT')
-            <div class="field">
+            <div class="field @error('name') field-has-error @enderror">
                 <label class="field-label" for="name">Имя</label>
                 <input id="name" type="text" name="name" value="{{ old('name', $user->name) }}" required>
+                @error('name')<span class="field-error-text">{{ $message }}</span>@enderror
             </div>
-            <div class="field">
+            <div class="field @error('email') field-has-error @enderror">
                 <label class="field-label" for="email">Email</label>
                 <input id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required>
+                @error('email')<span class="field-error-text">{{ $message }}</span>@enderror
             </div>
-            <div class="field">
+            <div class="field @error('phone') field-has-error @enderror">
                 <label class="field-label" for="phone">Телефон</label>
                 <input id="phone" type="text" name="phone" value="{{ old('phone', $user->phone) }}">
+                @error('phone')<span class="field-error-text">{{ $message }}</span>@enderror
             </div>
             <label class="checkbox">
                 <input type="checkbox" name="is_admin" value="1" @checked(old('is_admin', $user->is_admin))>

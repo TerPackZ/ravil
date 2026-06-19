@@ -29,11 +29,18 @@
                         </td>
                         <td class="table-actions">
                             <a href="{{ route('admin.users.edit', $user) }}">Редактировать</a>
+                            @if(auth()->id() !== $user->id)
+                                <form method="POST" action="{{ route('admin.users.destroy', $user) }}" data-confirm="Удалить пользователя {{ $user->name }}?">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="button button-ghost button-sm" type="submit">Удалить</button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4">Пользователей нет.</td>
+                        <td colspan="4" class="table-empty">Пользователей нет.</td>
                     </tr>
                 @endforelse
             </tbody>

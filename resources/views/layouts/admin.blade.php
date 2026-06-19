@@ -9,6 +9,7 @@
 </head>
 <body class="admin-body">
     <a class="skip-link" href="#admin-content">Перейти к содержимому</a>
+    <button class="admin-sidebar-backdrop" type="button" data-admin-sidebar-backdrop aria-label="Закрыть меню"></button>
     <aside class="admin-sidebar" data-admin-sidebar id="admin-sidebar">
         <a href="{{ route('admin.index') }}" class="admin-brand">NewCar</a>
         <p class="admin-brand-sub">Панель управления</p>
@@ -33,7 +34,9 @@
         </header>
 
         <main class="admin-content" id="admin-content">
-            @include('partials.flash')
+            <div class="flash-container flash-container-admin">
+                @include('partials.flash')
+            </div>
             @yield('content')
         </main>
     </div>
